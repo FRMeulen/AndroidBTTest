@@ -27,36 +27,38 @@ import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
-    Button onOffButton;
-    Button discoverabilityButton;
-    Button discoverButton;
-    Button connectButton;
-    Button sendButton;
-    Button disconnectButton;
+    //Buttons
+    Button onOffButton; //Enable or disable bluetooth
+    Button discoverabilityButton;   //Enable device discoverability for 300 seconds
+    Button discoverButton;  //Discover unpaired devices nearby
+    Button connectButton;   //Connect to selected device
+    Button sendButton;  //Send data in sendText to connected device
+    Button disconnectButton;    //Disconnect bluetooth
 
-    TextView btState;
-    TextView dataReceived;
-    EditText sendText;
+    TextView btState;   //Text showing bluetooth state
+    TextView dataReceived;  //Text showing data received
+    TextView btSelectedText;    //Text showing "Selected: "
+    TextView btSelected;    //Text showing selected device
+    EditText sendText;  //Field to enter text to send
 
-    BluetoothConnectionService mBluetoothConnection;
-    BluetoothDevice mBTDevice;
+    BluetoothConnectionService mBluetoothConnection;    //Bluetooth connection object
+    BluetoothDevice mBTDevice;  //Bluetooth device object
 
-    private static final UUID MY_UUID_INSECURE =
-            UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
+    private static final UUID MY_UUID_INSECURE = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");   //Default SerialPortService ID
 
-    BluetoothAdapter mBluetoothAdapter;
-    private static final String TAG = "My Activity";
+    BluetoothAdapter mBluetoothAdapter; //Device bluetooth adapter
+    private static final String TAG = "My Activity";    //Tag for logs
 
-    public ArrayList<BluetoothDevice> mBTDevices = new ArrayList<>();
-    public DeviceListAdapter mDeviceListAdapter;
-    ListView deviceList;
+    public ArrayList<BluetoothDevice> mBTDevices = new ArrayList<>();   //List of discovered devices
+    public DeviceListAdapter mDeviceListAdapter;    //Adapter for listed devices
+    ListView deviceList;    //Listview for discovered devices
 
-    // Create a BroadcastReceiver for ACTION_STATE_CHANGED.
+    //BroadcastReceiver for ACTION_STATE_CHANGED.
     private final BroadcastReceiver mBroadcastReceiverBTState = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
-            if (action.equals(mBluetoothAdapter.ACTION_STATE_CHANGED)) {
-                int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, mBluetoothAdapter.ERROR);
+            if (action.equals(mBluetoothAdapter.ACTION_STATE_CHANGED)) {    //If bluetooth adapter state changed
+                int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, mBluetoothAdapter.ERROR);  //Get adapter state
 
                 switch(state){
                     case BluetoothAdapter.STATE_OFF:
@@ -80,8 +82,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private final BroadcastReceiver mBroadcastReceiverDiscoverabilityState = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
-            if (action.equals(mBluetoothAdapter.ACTION_SCAN_MODE_CHANGED)) {
-                int mode = intent.getIntExtra(BluetoothAdapter.EXTRA_SCAN_MODE, mBluetoothAdapter.ERROR);
+            if (action.equals(mBluetoothAdapter.ACTION_SCAN_MODE_CHANGED)) {    //If scan mode changed
+                int mode = intent.getIntExtra(BluetoothAdapter.EXTRA_SCAN_MODE, mBluetoothAdapter.ERROR);   //Get scan mode
 
                 switch(mode){
                     case BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE:
@@ -178,6 +180,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         btState = findViewById(R.id.bt_state);
         dataReceived = findViewById(R.id.data_received);
         sendText = findViewById(R.id.sendText);
+        btSelectedText = findViewById(R.id.bt_selected_text);
+        btSelected = findViewById(R.id.bt_selected);
 
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
         registerReceiver(mBroadcastReceiverBondState, filter);
@@ -205,6 +209,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             public void onClick(View view) {
                 Log.d(TAG, "onClick: Discovering devices...");
                 mBTDevices.clear();
+                btSelectedText.setText("Selected: ");
+                btSelected.setText("NONE");
                 discoverDevices();
             }
         });
@@ -214,6 +220,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             public void onClick(View view) {
                 startConnection();
                 btState.setText(mBTDevice.getName());
+                btSelectedText.setText("");
+                btSelected.setText("");
+                sendText.setVisibility(View.VISIBLE);
             }
         });
 
@@ -222,6 +231,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             public void onClick(View view) {
                 byte[] bytes = sendText.getText().toString().getBytes(Charset.defaultCharset());
                 mBluetoothConnection.write(bytes);
+                mBluetoothConnection.read();
+                dataReceived.setText(mBluetoothConnection.getUserInput());
+                sendText.setText("");
             }
         });
 
@@ -238,8 +250,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     }
 
     public void killConnection(){
-        mBluetoothConnection.killClient();
-        mBluetoothConnection = null;
+        if(mBluetoothConnection != null){
+            mBluetoothConnection.killClient();
+            mBluetoothConnection = null;
+        }
     }
 
     public void startBluetoothConnection(BluetoothDevice device, UUID uuid){
@@ -328,6 +342,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         String deviceName = mBTDevices.get(position).getName();
         String deviceAddress = mBTDevices.get(position).getAddress();
+        btSelected.setText(deviceName);
         Log.d(TAG, "onItemClick: deviceName = " + deviceName);
         Log.d(TAG, "onItemClick: deviceAddress = " + deviceAddress);
 

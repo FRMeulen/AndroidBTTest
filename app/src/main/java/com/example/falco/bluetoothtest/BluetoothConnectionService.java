@@ -10,7 +10,6 @@ import android.util.Log;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.charset.Charset;
 import java.util.UUID;
 
 public class BluetoothConnectionService {
@@ -27,11 +26,13 @@ public class BluetoothConnectionService {
 
     private BluetoothDevice mmDevice;
     private UUID deviceUUID;
-    ProgressDialog mProgressDialog;
+    private ProgressDialog mProgressDialog;
 
     private final BluetoothAdapter mBluetoothAdapter;
 
     private final Context mContext;
+
+    private String userInput = "";
 
     public BluetoothConnectionService (Context context) {
         mContext = context;
@@ -69,7 +70,7 @@ public class BluetoothConnectionService {
             }
 
             if(socket != null){
-                connected(socket, mmDevice);
+                connected(socket);
             }
             Log.i(TAG, "END AcceptThread");
         }
@@ -117,7 +118,7 @@ public class BluetoothConnectionService {
                 Log.e(TAG, "ConnectThread: Could not connect to InsecureRfcommSocket " + e.getMessage());
             }
 
-            connected(mmSocket, mmDevice);
+            connected(mmSocket);
         }
 
         public void cancel(){
@@ -187,13 +188,9 @@ public class BluetoothConnectionService {
         }
 
         public void run(){
-            byte[] buffer = new byte[1024];
-            int bytes;
             while(true){
                 try {
-                    bytes = mmInStream.read(buffer);
-                    String incomingMessage = new String(buffer, 0, bytes);
-                    Log.d(TAG, "InputStream: " + incomingMessage);
+                    read();
                 } catch (IOException e) {
                     Log.e(TAG, "run: Error reading input stream");
                     break;
@@ -201,8 +198,17 @@ public class BluetoothConnectionService {
             }
         }
 
+        public void read() throws IOException{
+            byte[] buffer = new byte[1024];
+            int bytes;
+
+            bytes = mmInStream.read(buffer);
+            String incomingMessage = new String(buffer, 0, bytes);
+            Log.d(TAG, "InputStream: " + incomingMessage);
+            userInput = incomingMessage;
+        }
+
         public void write(byte[] bytes){
-            String text = new String(bytes, Charset.defaultCharset());
             try {
                 mmOutStream.write(bytes);
             } catch (IOException e) {
@@ -217,7 +223,7 @@ public class BluetoothConnectionService {
         }
     }
 
-    private void connected(BluetoothSocket mmSocket, BluetoothDevice device){
+    private void connected(BluetoothSocket mmSocket){
         Log.d(TAG, "connected: starting");
 
         mConnectedThread = new ConnectedThread(mmSocket);
@@ -226,5 +232,18 @@ public class BluetoothConnectionService {
 
     public void write(byte[] out){
         mConnectedThread.write(out);
+    }
+
+    public void read(){
+        try {
+            mConnectedThread.read();
+            Log.d(TAG, "BluetoothConnection: read: Reading input");
+        } catch (IOException e) {
+            Log.e(TAG, "BluetoothConnection: read: Error reading inputStream");
+        }
+    }
+
+    public String getUserInput(){
+        return userInput;
     }
 }
