@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     BluetoothDevice mBTDevice;
 
     private static final UUID MY_UUID_INSECURE =
-            UUID.fromString("8ce255c0-200a-11e0-ac64-0800200c9a66");
+            UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
 
     BluetoothAdapter mBluetoothAdapter;
     private static final String TAG = "My Activity";
@@ -109,11 +109,13 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
             if (action.equals(BluetoothDevice.ACTION_FOUND)) {
-                mBTDevices.clear(); //Clear all known unpaired devices to avoid duplicates
-
                 //Scan for new devices
                 BluetoothDevice device = intent.getParcelableExtra (BluetoothDevice.EXTRA_DEVICE);
-                mBTDevices.add(device);
+
+                if(!mBTDevices.contains(device)){
+                    mBTDevices.add(device);
+                }
+
                 Log.d(TAG, "onReceive: Listed " + device.getName() + " at " + device.getAddress() + ".");
                 mDeviceListAdapter = new DeviceListAdapter(context, R.layout.device_adapter_view, mBTDevices);
                 deviceList.setAdapter(mDeviceListAdapter);
@@ -202,6 +204,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "onClick: Discovering devices...");
+                mBTDevices.clear();
                 discoverDevices();
             }
         });
