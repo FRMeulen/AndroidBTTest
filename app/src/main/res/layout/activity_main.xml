@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.falco.bluetoothtest.MainActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/mainLayout">
+
+
+        <TextView
+            android:id="@+id/bt_connected_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="14dp"
+            android:text="@string/bt_connected_text"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/bt_state"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/bt_connected_text"
+            android:layout_alignBottom="@+id/bt_connected_text"
+            android:layout_marginLeft="14dp"
+            android:layout_marginStart="14dp"
+            android:layout_toEndOf="@+id/bt_connected_text"
+            android:layout_toRightOf="@+id/bt_connected_text"
+            android:text="@string/bt_state"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/data_received_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/bt_connected_text"
+            android:layout_alignStart="@+id/bt_connected_text"
+            android:layout_below="@+id/bt_connected_text"
+            android:text="@string/data_received_text"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/data_received"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/data_received_text"
+            android:layout_alignBottom="@+id/data_received_text"
+            android:layout_marginLeft="12dp"
+            android:layout_marginStart="12dp"
+            android:layout_toEndOf="@+id/data_received_text"
+            android:layout_toRightOf="@+id/data_received_text"
+            android:text="@string/data_received"
+            android:textSize="20sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:id="@+id/buttonLayoutOne"
+            android:layout_below="@id/data_received">
+
+            <Button
+                android:id="@+id/onOffButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/on_off" />
+
+            <Button
+                android:id="@+id/discoverabilityButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/discoverability" />
+
+            <Button
+                android:id="@+id/listButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/list_devices" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/buttonLayoutTwo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_below="@id/buttonLayoutOne">
+
+            <Button
+                android:id="@+id/connectButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/connect"/>
+
+            <Button
+                android:id="@+id/sendButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/send"/>
+
+            <Button
+                android:id="@+id/disconnectButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/disconnect"/>
+
+        </LinearLayout>
+
+
+        <ListView
+            android:id="@+id/deviceList"
+            android:layout_width="match_parent"
+            android:layout_height="253dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/buttonLayoutTwo"
+            android:layout_marginTop="-1dp" />
+
+        <EditText
+            android:id="@+id/sendText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/sendTextHint"
+            android:layout_below="@id/deviceList"/>
+    </RelativeLayout>
+
+</android.support.constraint.ConstraintLayout>
