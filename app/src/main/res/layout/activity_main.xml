@@ -80,6 +80,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/discoverability"
+                android:visibility="invisible"
                 style="?android:attr/buttonBarButtonStyle"/>
 
             <Button
@@ -87,6 +88,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/list_devices"
+                android:visibility="invisible"
                 style="?android:attr/buttonBarButtonStyle"/>
         </LinearLayout>
 
@@ -102,6 +104,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/connect"
+                android:visibility="invisible"
                 style="?android:attr/buttonBarButtonStyle"/>
 
             <Button
@@ -109,6 +112,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/send"
+                android:visibility="invisible"
                 style="?android:attr/buttonBarButtonStyle"/>
 
             <Button
@@ -116,6 +120,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/disconnect"
+                android:visibility="invisible"
                 style="?android:attr/buttonBarButtonStyle"/>
 
         </LinearLayout>
@@ -128,6 +133,7 @@
             android:layout_marginStart="10dp"
             android:text="@string/bt_selected_text"
             android:layout_below="@id/buttonLayoutTwo"
+            android:visibility="invisible"
             android:textSize="20sp" />
 
         <TextView
@@ -142,6 +148,7 @@
             android:layout_toRightOf="@+id/bt_selected_text"
             android:text="@string/bt_selected"
             android:layout_below="@+id/buttonLayoutTwo"
+            android:visibility="invisible"
             android:textSize="20sp" />
 
         <ListView
@@ -150,6 +157,7 @@
             android:layout_height="253dp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
+            android:visibility="invisible"
             android:layout_below="@+id/bt_selected_text" />
 
         <EditText

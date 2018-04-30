@@ -11,6 +11,6 @@
     <string name="send">Send</string>
     <string name="disconnect">Disconnect</string>
     <string name="sendTextHint">Put text here to send</string>
-    <string name="bt_selected_text"></string>
-    <string name="bt_selected"></string>
+    <string name="bt_selected_text">Selected: </string>
+    <string name="bt_selected">NONE</string>
 </resources>
