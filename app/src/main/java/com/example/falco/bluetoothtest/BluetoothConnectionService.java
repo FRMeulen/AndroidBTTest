@@ -8,6 +8,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.os.SystemClock;
 import android.util.Log;
 import android.widget.TextView;
@@ -208,9 +209,10 @@ public class BluetoothConnectionService {
 
         //Run on creation
         public void run(){
-            byte[] buffer = new byte[1024]; //Buffer byte array
+            byte[] buffer = new byte[8]; //Buffer byte array - needs more space for longer strings
             int bytes;  //Length of read bytes
 
+            Log.d(TAG, "Starting read loop...");
             while(true){    //Infinite loop
                 try {   //Try to read input
                     if(mmInStream.available()> 0){  //If input is found
@@ -219,6 +221,21 @@ public class BluetoothConnectionService {
                         String incomingMessage = new String(buffer, 0, bytes);  //Form string from bytes
                         Log.d(TAG, "InputStream: " + incomingMessage);  //Log
                         dataRead = incomingMessage; //Store read message
+
+                        //Prepare string for use
+                        Log.d(TAG, ""+dataRead.length());
+                        dataRead = dataRead.substring(1, 6);
+                        Log.d(TAG, dataRead);
+                        Log.d(TAG, ""+dataRead.length());
+
+                        if(dataRead.length() == 5){ //Filter cut off messages
+                            if(dataRead.equals("mr:01")){   //Filter for
+                                Log.d(TAG, "Maracas sound one detected");
+                                MediaPlayer mp = MediaPlayer.create(mContext, R.raw.maraca_1);
+                                SoundThread temp = new SoundThread();
+                                temp.run(mp);
+                            }
+                        }
                     }
                     else{   //If no input is available
                         SystemClock.sleep(100); //Sleep for 100 ms
