@@ -38,34 +38,11 @@
             android:text="@string/bt_state"
             android:textSize="20sp" />
 
-        <TextView
-            android:id="@+id/data_received_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/bt_connected_text"
-            android:layout_alignStart="@+id/bt_connected_text"
-            android:layout_below="@+id/bt_connected_text"
-            android:text="@string/data_received_text"
-            android:textSize="20sp" />
-
-        <TextView
-            android:id="@+id/data_received"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/data_received_text"
-            android:layout_alignBottom="@+id/data_received_text"
-            android:layout_marginLeft="10dp"
-            android:layout_marginStart="10dp"
-            android:layout_toEndOf="@+id/data_received_text"
-            android:layout_toRightOf="@+id/data_received_text"
-            android:text="@string/data_received"
-            android:textSize="20sp" />
-
         <LinearLayout
             android:id="@+id/buttonLayoutOne"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/data_received_text"
+            android:layout_below="@id/bt_connected_text"
             android:orientation="horizontal">
 
             <Button
@@ -75,13 +52,6 @@
                 android:text="@string/on_off"
                 style="?android:attr/buttonBarButtonStyle"/>
 
-            <Button
-                android:id="@+id/discoverabilityButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/discoverability"
-                android:visibility="invisible"
-                style="?android:attr/buttonBarButtonStyle"/>
 
             <Button
                 android:id="@+id/listButton"
@@ -104,14 +74,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/connect"
-                android:visibility="invisible"
-                style="?android:attr/buttonBarButtonStyle"/>
-
-            <Button
-                android:id="@+id/sendButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/send"
                 android:visibility="invisible"
                 style="?android:attr/buttonBarButtonStyle"/>
 
@@ -160,13 +122,6 @@
             android:visibility="invisible"
             android:layout_below="@+id/bt_selected_text" />
 
-        <EditText
-            android:id="@+id/sendText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/deviceList"
-            android:hint="@string/sendTextHint"
-            android:visibility="invisible"/>
     </RelativeLayout>
 
 </android.support.constraint.ConstraintLayout>

@@ -22,6 +22,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -33,18 +34,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     //Buttons
     Button onOffButton; //Enable or disable bluetooth
-    Button discoverabilityButton;   //Enable device discoverability for 300 seconds
     Button discoverButton;  //Discover unpaired devices nearby
     Button connectButton;   //Connect to selected device
-    Button sendButton;  //Send data in sendText to connected device
     Button disconnectButton;    //Disconnect bluetooth
 
     //Text fields
     TextView btState;   //Text showing bluetooth state
-    TextView dataReceived;  //Text showing data received
     TextView btSelectedText;    //Text showing "Selected: "
     TextView btSelected;    //Text showing selected device
-    EditText sendText;  //Field to enter text to send
 
     //Bluetooth fields
     BluetoothConnectionService mBluetoothConnection;    //Bluetooth connection object
@@ -125,7 +122,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
                 //Ignore duplicates
                 if(!mBTDevices.contains(device)){
-                    mBTDevices.add(device);
+                    if(device.getName() != null){
+                        mBTDevices.add(device);
+                    }
                 }
 
                 Log.d(TAG, "onReceive: Listed " + device.getName() + " at " + device.getAddress() + ".");   //Log
@@ -183,18 +182,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         //Buttons
         onOffButton = findViewById(R.id.onOffButton);
-        discoverabilityButton = findViewById(R.id.discoverabilityButton);
         discoverButton = findViewById(R.id.listButton);
         deviceList = findViewById(R.id.deviceList);
         mBTDevices = new ArrayList<>();
         connectButton = findViewById(R.id.connectButton);
-        sendButton = findViewById(R.id.sendButton);
         disconnectButton = findViewById(R.id.disconnectButton);
 
         //Text Fields
         btState = findViewById(R.id.bt_state);
-        dataReceived = findViewById(R.id.data_received);
-        sendText = findViewById(R.id.sendText);
         btSelectedText = findViewById(R.id.bt_selected_text);
         btSelected = findViewById(R.id.bt_selected);
 
@@ -205,29 +200,22 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         //Listeners
         deviceList.setOnItemClickListener(MainActivity.this);   //Device list item click listener
 
+        if(mBluetoothAdapter.isEnabled()){
+            discoverButton.setVisibility(View.VISIBLE);
+        }
+
         //On / Off button
         onOffButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "onClick: enabling/disabling bluetooth.");   //Log
                 if(!mBluetoothAdapter.isEnabled()){ //If bluetooth adapter is disabled upon click
-                    discoverabilityButton.setVisibility(View.VISIBLE);  //Show discoverability button
                     discoverButton.setVisibility(View.VISIBLE); //Show discover button
                 }
                 else {  //If bluetooth adapter is enabled upon click
-                    discoverabilityButton.setVisibility(View.INVISIBLE);    //Hide discoverability button
                     discoverButton.setVisibility(View.INVISIBLE);   //Hide discover button
                 }
                 enableDisableBluetooth();   //Switch adapter state
-            }
-        });
-
-        //Discoverability button
-        discoverabilityButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, "onClick: Enabling discoverability.");   //Log
-                toggleDiscoverability();    //Set discoverability
             }
         });
 
@@ -249,24 +237,19 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         connectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startConnection();  //Start connection to selected device
-                btState.setText(mBTDevice.getName());   //Show connected device's name
-                btSelectedText.setVisibility(View.INVISIBLE);   //Hide "Selected: "
-                btSelected.setVisibility(View.INVISIBLE);   //Hide selection
-                sendButton.setVisibility(View.VISIBLE); //Show send button
-                sendText.setVisibility(View.VISIBLE);   //Show text bar
-                deviceList.setVisibility(View.INVISIBLE);   //Hide device list
-                disconnectButton.setVisibility(View.VISIBLE);   //Show disconnect button
-            }
-        });
-
-        //Send button
-        sendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                byte[] bytes = sendText.getText().toString().getBytes(Charset.defaultCharset());    //Store text bar input in byte array
-                mBluetoothConnection.write(bytes);  //Write byte array to bluetooth
-                sendText.setText("");   //Clear text bar
+                if(mBTDevice != null){
+                    startConnection();  //Start connection to selected device
+                    btState.setText(mBTDevice.getName());   //Show connected device's name
+                    btSelectedText.setVisibility(View.INVISIBLE);   //Hide "Selected: "
+                    btSelected.setVisibility(View.INVISIBLE);   //Hide selection
+                    deviceList.setVisibility(View.INVISIBLE);   //Hide device list
+                    connectButton.setVisibility(View.INVISIBLE);
+                    disconnectButton.setVisibility(View.VISIBLE);   //Show disconnect button
+                }
+                else{
+                    Toast noneSelectedToast = Toast.makeText(getApplicationContext(), "No device selected!", Toast.LENGTH_LONG);
+                    noneSelectedToast.show();
+                }
             }
         });
 
@@ -275,6 +258,16 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             @Override
             public void onClick(View view) {
                 killConnection();   //Kill connection
+
+                //Reset to start of application
+                if(mBluetoothAdapter.isEnabled()){
+                    discoverButton.setVisibility(View.VISIBLE);
+                }
+                disconnectButton.setVisibility(View.INVISIBLE);
+                mBTDevice = null;
+                mBTDevices.clear();
+                btSelected.setText("NONE");
+                btState.setText("NONE");
             }
         });
     }

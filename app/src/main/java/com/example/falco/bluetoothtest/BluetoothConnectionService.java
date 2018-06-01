@@ -222,20 +222,8 @@ public class BluetoothConnectionService {
                         Log.d(TAG, "InputStream: " + incomingMessage);  //Log
                         dataRead = incomingMessage; //Store read message
 
-                        //Prepare string for use
-                        Log.d(TAG, ""+dataRead.length());
-                        dataRead = dataRead.substring(1, 6);
-                        Log.d(TAG, dataRead);
-                        Log.d(TAG, ""+dataRead.length());
-
-                        if(dataRead.length() == 5){ //Filter cut off messages
-                            if(dataRead.equals("mr:01")){   //Filter for
-                                Log.d(TAG, "Maracas sound one detected");
-                                MediaPlayer mp = MediaPlayer.create(mContext, R.raw.maraca_1);
-                                SoundThread temp = new SoundThread();
-                                temp.run(mp);
-                            }
-                        }
+                        ParseThread parser = new ParseThread();
+                        parser.run(dataRead, mContext);
                     }
                     else{   //If no input is available
                         SystemClock.sleep(100); //Sleep for 100 ms
