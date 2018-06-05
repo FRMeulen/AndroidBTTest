@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     //Device list
     public ArrayList<BluetoothDevice> mBTDevices = new ArrayList<>();   //List of discovered devices
+    public ArrayList<BluetoothDevice> mIgnoredDevices = new ArrayList<>();  //List of unwanted devices
     public DeviceListAdapter mDeviceListAdapter;    //Adapter for listed devices
     ListView deviceList;    //Listview for discovered devices
 
@@ -121,13 +122,29 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 BluetoothDevice device = intent.getParcelableExtra (BluetoothDevice.EXTRA_DEVICE);
 
                 //Ignore duplicates
-                if(!mBTDevices.contains(device)){
-                    if(device.getName() != null){
-                        mBTDevices.add(device);
+                if(mIgnoredDevices.contains(device)){
+                    //Device will be ignored fully
+                }
+                else {
+                    if(!mBTDevices.contains(device)){
+                        if(device.getName() != null){
+                            if(device.getName().equals("Music Hand Right")){
+                                mBTDevices.add(device); //Add to connectable devices
+                                mIgnoredDevices.add(device);    //Ignore when found again
+                                Log.d(TAG, "onReceive: Listed " + device.getName() + " at " + device.getAddress() + ".");   //Log
+                            }
+                            else if(device.getName().equals("Music Hand Left")){
+                                mBTDevices.add(device); //Add to connectable devices
+                                mIgnoredDevices.add(device);    //Ignore when found again
+                                Log.d(TAG, "onReceive: Listed " + device.getName() + " at " + device.getAddress() + ".");   //Log
+                            }
+                            else{
+                                mIgnoredDevices.add(device);    //Ignore device
+                                Log.d(TAG, "Unwanted device found, ignoring...");   //Log
+                            }
+                        }
                     }
                 }
-
-                Log.d(TAG, "onReceive: Listed " + device.getName() + " at " + device.getAddress() + ".");   //Log
                 mDeviceListAdapter = new DeviceListAdapter(context, R.layout.device_adapter_view, mBTDevices);  //Create adapter for listed devices
                 deviceList.setAdapter(mDeviceListAdapter);  //Add adapter to listView
             }
@@ -348,17 +365,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             IntentFilter bluetoothIntent = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED); //Filter for adapter state changed
             registerReceiver(mBroadcastReceiverBTState, bluetoothIntent);   //Register receiver
         }
-    }
-
-    //Discoverability
-    public void toggleDiscoverability() {
-        Log.d(TAG, "discoverabilityButton: Making device discoverable for 300 seconds.");   //Log
-        Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);   //Intent for discoverability
-        discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300); //Give duration as extra
-        startActivity(discoverableIntent);  //Start activity
-
-        IntentFilter intentFilter = new IntentFilter(mBluetoothAdapter.ACTION_SCAN_MODE_CHANGED);   //Filter for scan mode changed
-        registerReceiver(mBroadcastReceiverDiscoverabilityState, intentFilter); //Register receiver
     }
 
     //Item click in ListView

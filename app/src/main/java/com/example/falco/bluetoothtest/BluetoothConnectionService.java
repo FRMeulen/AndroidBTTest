@@ -34,16 +34,14 @@ public class BluetoothConnectionService {
     private ProgressDialog mProgressDialog; //Dialog during connection
 
     private final BluetoothAdapter mBluetoothAdapter;   //Phone bluetooth adapter
-
     private final Context mContext; //Context
-
     private String dataRead = "";   //Data read from bluetooth module
-
-    private TextView dataReceived;  //View to show data received
+    private ParseThread parser;
 
     //Constructor
     public BluetoothConnectionService (Context context) {
         mContext = context; //Set context
+        parser = new ParseThread(context);
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();   //Get phone bluetooth adapter
         start();    //Start
     }
@@ -222,11 +220,10 @@ public class BluetoothConnectionService {
                         Log.d(TAG, "InputStream: " + incomingMessage);  //Log
                         dataRead = incomingMessage; //Store read message
 
-                        ParseThread parser = new ParseThread();
-                        parser.run(dataRead, mContext);
+                        parser.parse(incomingMessage);
                     }
                     else{   //If no input is available
-                        SystemClock.sleep(100); //Sleep for 100 ms
+                        SystemClock.sleep(10); //Sleep for 100 ms
                     }
                 } catch (IOException e) {   //Catch exceptions
                     Log.e(TAG, "run: Error reading input stream");  //Log
@@ -262,6 +259,7 @@ public class BluetoothConnectionService {
 
         mConnectedThread = new ConnectedThread(mmSocket);   //Create ConnectedThread
         mConnectedThread.start();   //Start ConnectedThread
+        parser.start();
     }
 
     //Write method accessor
